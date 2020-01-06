@@ -1,6 +1,6 @@
 {
   "name": "simple-cognito-server-auth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple wrapper around Amazon's SDK library allowing to authenticate and create users from a backend server ",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
