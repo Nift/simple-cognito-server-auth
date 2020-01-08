@@ -70,14 +70,18 @@ export async function validateAwsToken(
 
 export async function doesUserExist({
   region,
+  accessKeyId,
+  secretAccessKey,
   userPoolId,
   username
 }: {
   region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
   userPoolId: string;
   username: string;
 }) {
-  AWS.config.update({ region });
+  AWS.config.update({ region, accessKeyId, secretAccessKey });
   const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
   try {
     const user = await cognitoIdentityServiceProvider
@@ -91,18 +95,22 @@ export async function doesUserExist({
 
 export async function createUserSilently({
   region,
+  accessKeyId,
+  secretAccessKey,
   userPoolId,
   clientId,
   username,
   password
 }: {
   region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
   userPoolId: string;
   clientId: string;
   username: string;
   password: string;
 }) {
-  AWS.config.update({ region });
+  AWS.config.update({ region, accessKeyId, secretAccessKey });
   const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
   try {
     await cognitoIdentityServiceProvider
