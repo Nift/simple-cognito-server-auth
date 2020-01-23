@@ -31,10 +31,9 @@ export interface IAwsTokenPayload {
   token_use: string;
   auth_time: number;
   iss: string;
-  "cognito:username": string;
+  username: string;
   exp: number;
   iat: number;
-  email: string;
 }
 
 export async function validateAwsToken(
@@ -62,7 +61,8 @@ export async function validateAwsToken(
     const verifiedDecoded = <IAwsTokenPayload>jwt.verify(token, pem, {
       algorithms: ["RS256"]
     });
-    return { userId: verifiedDecoded.sub, email: verifiedDecoded.email };
+
+    return { userId: verifiedDecoded.sub };
   } catch (error) {
     throw new Error("not possible to authenticate");
   }
@@ -91,6 +91,34 @@ export async function doesUserExist({
   } catch (error) {
     return false;
   }
+}
+
+export async function attemptToRefreshToken({
+  region,
+  accessKeyId,
+  secretAccessKey,
+  userPoolId,
+  clientId,
+  refreshToken
+}: {
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  userPoolId: string;
+  clientId: string;
+  refreshToken: string;
+}) {
+  AWS.config.update({ region, accessKeyId, secretAccessKey });
+  const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+  return cognitoIdentityServiceProvider
+    .initiateAuth({
+      ClientId: clientId,
+      AuthFlow: "REFRESH_TOKEN_AUTH",
+      AuthParameters: {
+        REFRESH_TOKEN: refreshToken
+      }
+    })
+    .promise();
 }
 
 export async function createUserSilently({
